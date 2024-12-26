@@ -1,8 +1,8 @@
 {
-  "name": "spike",
-  "productName": "spike",
+  "name": "lego-spike",
+  "productName": "LEGO SPIKE Prime",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "LEGO SPIKE Prime development environment",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
