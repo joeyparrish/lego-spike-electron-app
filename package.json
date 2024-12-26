@@ -1,5 +1,6 @@
 {
   "name": "lego-spike",
+  "private": true,
   "productName": "LEGO SPIKE Prime",
   "version": "1.0.0",
   "description": "LEGO SPIKE Prime development environment",
