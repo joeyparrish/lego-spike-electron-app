@@ -8,13 +8,13 @@ if (started) {
 }
 
 const createWindow = () => {
-  const mainWindow = new BrowserWindow({
-/*
-    width: 800,
-    height: 600,
-*/
-  });
+  const mainWindow = new BrowserWindow({});
   mainWindow.removeMenu();
+  mainWindow.setTitle('LEGO SPIKE Prime');
+  mainWindow.setIcon(path.join(__dirname, 'spike.png'));
+  mainWindow.on('page-title-updated', (event) => {
+    event.preventDefault();
+  });
   mainWindow.loadURL('https://spike.legoeducation.com/prime/lobby/');
 };
 
