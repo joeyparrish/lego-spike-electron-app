@@ -24,6 +24,13 @@ jobs:
           # A GPG key is used to sign the debian packages for distribution.
           echo "${{ secrets.DEB_GPG_KEY }}" | gpg --import
 
+      - name: Set version
+        run: |
+          MAJOR="1"
+          MINOR=$(date -u +%Y%m%d)
+          PATCH=$(date -u +%H%M%S)
+          sed -e "s/\"version\": \"1.0.0\"/\"version\": \"$MAJOR.$MINOR.$PATCH\"/" -i package.json
+
       - name: Build package
         run: npm ci && npm run make
 
@@ -34,7 +41,7 @@ jobs:
           mkdir staging
           mkdir staging/conf
           cp reprepro.conf staging/conf/distributions
-          reprepro --basedir staging includedeb stable out/make/deb/x64/lego-spike_1.0.0_amd64.deb
+          reprepro --basedir staging includedeb stable out/make/deb/x64/lego-spike*.deb
           gpg -o staging/public.key --armor --export joeyparrish@github.io
 
       - name: Upload package
