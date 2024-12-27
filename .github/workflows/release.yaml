@@ -1,0 +1,60 @@
+name: Release
+# Based on shaka-project/shaka-lab release workflow
+
+on:
+  workflow_dispatch:
+    # Manual triggering.
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install deps
+        run: |
+          sudo apt -y update
+          sudo apt -y install \
+              coreutils debhelper devscripts fakeroot gpg reprepro
+
+      - name: Import GPG key
+        run: |
+          # A GPG key is used to sign the debian packages for distribution.
+          echo "${{ secrets.DEB_GPG_KEY }}" | gpg --import
+
+      - name: Build package
+        run: npm ci && npm run make
+
+      - name: Stage package
+        run: |
+          # This uses the reprepro tool to sign packages and build the
+          # necessarily layout for Debian package distribution.
+          mkdir staging
+          mkdir staging/conf
+          cp reprepro.conf staging/conf/distributions
+          reprepro --basedir staging includedeb stable out/make/deb/x64/lego-spike_1.0.0_amd64.deb
+          gpg -o staging/public.key --armor --export joeyparrish@github.io
+
+      - name: Upload package
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: staging
+
+  deploy-linux:
+    needs: build-linux
+    # Linux packages are deployed as static content to GitHub Pages.
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v1
